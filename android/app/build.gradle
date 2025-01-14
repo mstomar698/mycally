@@ -1,0 +1,88 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    id "dev.flutter.flutter-gradle-plugin"
+}
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader("UTF-8") { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterVersionCode = localProperties.getProperty("flutter.versionCode")
+if (flutterVersionCode == null) {
+    flutterVersionCode = "1"
+}
+
+def flutterVersionName = localProperties.getProperty("flutter.versionName")
+if (flutterVersionName == null) {
+    flutterVersionName = "1.0"
+}
+
+android {
+    namespace = "my.cally.app"
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+        applicationId = "my.cally.app"
+        minSdk = flutter.minSdkVersion
+        targetSdk = flutter.targetSdkVersion
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
+    }
+
+   signingConfigs {
+        debug {
+            keyAlias keystoreProperties['MY_CALLY_UPLOAD_KEY_ALIAS_DEBUG']
+            keyPassword keystoreProperties['MY_CALLY_UPLOAD_KEY_PASSWORD_DEBUG']
+            storeFile keystoreProperties['MY_CALLY_UPLOAD_STORE_FILE_DEBUG'] \
+                ? file(keystoreProperties['MY_CALLY_UPLOAD_STORE_FILE_DEBUG']) : null
+            storePassword keystoreProperties['MY_CALLY_UPLOAD_STORE_PASSWORD_DEBUG']
+        }
+        release {
+            keyAlias keystoreProperties['MY_CALLY_UPLOAD_KEY_ALIAS_PROD']
+            keyPassword keystoreProperties['MY_CALLY_UPLOAD_KEY_PASSWORD_PROD']
+            storeFile keystoreProperties['MY_CALLY_UPLOAD_STORE_FILE_PROD'] \
+                ? file(keystoreProperties['MY_CALLY_UPLOAD_STORE_FILE_PROD']) : null
+            storePassword keystoreProperties['MY_CALLY_UPLOAD_STORE_PASSWORD_PROD']
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+            minifyEnabled false
+            shrinkResources false
+        }
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+                          'proguard-rules.pro'
+        }
+    }
+}
+
+flutter {
+    source = "../.."
+}
