@@ -1,5 +1,9 @@
 {
   "app_name": "MyCally",
   "get_started": "Get Started",
-  "welcome": "Welcome to MyCally"
+  "welcome": "Welcome to MyCally",
+  "select_language": "Select Language",
+  "select_font_size": "Select Font Size",
+  "select_theme": "Select Theme",
+  "continue": "Continue"
 }

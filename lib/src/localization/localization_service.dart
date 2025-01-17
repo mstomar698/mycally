@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mycally/src/config/constants.dart';
 
 class LocalizationService {
   static const String _languageCodeKey = 'languageCode';
@@ -37,5 +38,15 @@ class LocalizationService {
   static Future<void> setFontSize(double fontSize) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setDouble(_fontSizeKey, fontSize);
+  }
+
+  static Future<void> setLanguageSelected(bool isSet) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(isLanguageSetKey, isSet);
+  }
+
+  static Future<bool> isLanguageSelected() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(isLanguageSetKey) ?? false;
   }
 }

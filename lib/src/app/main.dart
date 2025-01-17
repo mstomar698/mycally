@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mycally/src/presentation/screens/home/home_screen.dart';
 import 'package:mycally/src/state/providers/settings_provider.dart';
 import 'package:mycally/src/presentation/screens/splash/splash_screen.dart';
 import 'package:provider/provider.dart';
@@ -37,6 +38,9 @@ class MyApp extends StatelessWidget {
       supportedLocales: context.supportedLocales,
       localizationsDelegates: context.localizationDelegates,
       home: const SplashScreen(),
+      routes: {
+        '/home': (context) => const HomePage(),
+      },
       debugShowCheckedModeBanner: false,
     );
   }

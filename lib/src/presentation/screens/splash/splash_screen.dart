@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:mycally/src/config/constants.dart';
+import 'package:mycally/src/localization/localization_service.dart';
 import 'package:mycally/src/presentation/screens/language_selector/language_selector_screen.dart';
 import 'package:mycally/src/presentation/screens/login/login_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mycally/src/state/providers/settings_provider.dart';
+import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -27,7 +28,11 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _initSplash() async {
-    await _loadPreferences();
+    Provider.of<SettingsProvider>(context, listen: false);
+
+    await LocalizationService.loadPreferences(context);
+
+    _isLanguageSet = await LocalizationService.isLanguageSelected();
 
     _fadeController = AnimationController(
       vsync: this,
@@ -50,11 +55,6 @@ class _SplashScreenState extends State<SplashScreen>
     }
   }
 
-  Future<void> _loadPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    _isLanguageSet = prefs.getBool(kIsLanguageSetKey) ?? false;
-  }
-
   void _onGetStartedPressed() {
     Navigator.pushReplacement(
       context,
@@ -70,17 +70,36 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final settingsProvider = Provider.of<SettingsProvider>(context);
     final Size screenSize = MediaQuery.of(context).size;
+    final String selectedLanguage = settingsProvider.locale.languageCode;
+    final double selectedFontSize = settingsProvider.fontSize;
+    final ThemeMode selectedThemeMode = settingsProvider.themeMode;
+    print('selectedLanguage: $selectedLanguage, '
+        'selectedFontSize: $selectedFontSize, '
+        'selectedThemeMode: $selectedThemeMode, from splash screen');
+    final backgroundColor = settingsProvider.themeMode == ThemeMode.dark
+        ? Colors.black
+        : Colors.white;
+
+    final textColor = settingsProvider.themeMode == ThemeMode.dark
+        ? Colors.white
+        : Colors.deepPurple;
+
+    final subtitleColor = settingsProvider.themeMode == ThemeMode.dark
+        ? Colors.grey[400]
+        : Colors.grey;
 
     if (_isLoadingPrefs) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+      return Scaffold(
+        backgroundColor: backgroundColor,
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (_isLanguageSet) {
       return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: backgroundColor,
         body: Center(
           child: FadeTransition(
             opacity: _fadeAnimation,
@@ -95,10 +114,10 @@ class _SplashScreenState extends State<SplashScreen>
                 const SizedBox(height: 20),
                 Text(
                   tr('app_name'),
-                  style: const TextStyle(
-                    fontSize: 28,
+                  style: TextStyle(
+                    fontSize: settingsProvider.fontSize,
                     fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple,
+                    color: textColor,
                   ),
                 ),
               ],
@@ -109,7 +128,7 @@ class _SplashScreenState extends State<SplashScreen>
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: backgroundColor,
       body: SafeArea(
         child: Stack(
           children: [
@@ -127,26 +146,25 @@ class _SplashScreenState extends State<SplashScreen>
                     const SizedBox(height: 20),
                     Text(
                       tr('app_name'),
-                      style: const TextStyle(
-                        fontSize: 28,
+                      style: TextStyle(
+                        fontSize: settingsProvider.fontSize,
                         fontWeight: FontWeight.bold,
-                        color: Colors.deepPurple,
+                        color: textColor,
                       ),
                     ),
                     const SizedBox(height: 10),
                     Text(
                       tr('welcome'),
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
+                      style: TextStyle(
+                        fontSize: settingsProvider.fontSize - 2,
+                        color: subtitleColor,
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-
             Positioned(
               bottom: 30,
               left: screenSize.width * 0.05,
@@ -164,8 +182,8 @@ class _SplashScreenState extends State<SplashScreen>
                   ),
                   child: Text(
                     tr('get_started'),
-                    style: const TextStyle(
-                      fontSize: 18,
+                    style: TextStyle(
+                      fontSize: settingsProvider.fontSize,
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),

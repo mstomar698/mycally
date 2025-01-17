@@ -16,6 +16,7 @@ dependencies:
   provider: ^6.1.2
   easy_localization: ^3.0.7
   shared_preferences: ^2.3.5
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:
@@ -30,7 +31,8 @@ flutter:
     - assets/lang/en.json
     - assets/lang/hi.json
     - assets/images/mycally_logo.png
-
+    - assets/images/login_page_logo.png
+    - assets/images/login_screen_icon.png
 
   fonts:
     - family: Alkia

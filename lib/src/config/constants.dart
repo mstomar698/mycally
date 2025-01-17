@@ -1,1 +1,1 @@
-const String kIsLanguageSetKey = 'isLanguageSet';
+const String isLanguageSetKey = 'isLanguageSet';

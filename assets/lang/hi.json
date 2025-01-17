@@ -1,5 +1,9 @@
 {
   "app_name": "माईकैली",
   "get_started": "शुरू करें",
-  "welcome": "माईकैली में आपका स्वागत है"
+  "welcome": "माईकैली में आपका स्वागत है",
+  "select_language": "भाषा चुनें",
+  "select_font_size": "फ़ॉन्ट आकार चुनें",
+  "select_theme": "थीम चुनें",
+  "continue": "आगे बढ़ें"
 }
