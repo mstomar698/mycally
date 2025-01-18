@@ -9,8 +9,19 @@ class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   Future<void> _launchURL(String url) async {
-    if (await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    final uri = Uri.parse(url);
+
+    if (await canLaunchUrl(uri)) {
+      final bool launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (!launched) {
+        throw 'Could not launch $url';
+      }
+    } else {
+      throw 'Could not launch $url';
     }
   }
 
@@ -29,14 +40,16 @@ class LoginScreen extends StatelessWidget {
     final bottomTextColor =
         selectedThemeMode == ThemeMode.dark ? Colors.grey[400] : Colors.grey;
 
+    print('selectedLanguage: $selectedLanguage, '
+        'selectedFontSize: $selectedFontSize, '
+        'selectedThemeMode: $selectedThemeMode, from login screen');
+
     return Scaffold(
       backgroundColor: backgroundColor,
       body: SafeArea(
         child: Column(
           children: [
             const SizedBox(height: 40),
-
-            // App Name Header
             Text(
               tr('app_name'),
               style: TextStyle(
@@ -45,32 +58,25 @@ class LoginScreen extends StatelessWidget {
                 color: textColor,
               ),
             ),
-
             const SizedBox(height: 40),
-
-            // Centered Logo Image
             Expanded(
               child: Center(
                 child: Image.asset(
                   'assets/images/login_screen_icon.png',
-                  // 'assets/images/login_page_logo.png',
                   width: 300,
                   height: 300,
                   fit: BoxFit.cover,
                 ),
               ),
             ),
-
-            // Bottom Buttons (Google & Guest)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
-                  // Disabled Google Button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      onPressed: null, // Disabled for now
+                      onPressed: null,
                       icon: const Icon(Icons.g_mobiledata),
                       label: Text(
                         selectedLanguage == 'hi'
@@ -87,10 +93,7 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 10),
-
-                  // Continue as Guest Button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -116,15 +119,11 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 20),
-
-                  // Privacy Policy & Terms
                   Text.rich(
                     TextSpan(
                       text: selectedLanguage == 'hi'
                           ? 'जारी रखकर, आप हमारी '
-                              'जारी रखकर, आप हमारी बात से सहमत हैं'
                           : 'By continuing, you agree to our ',
                       style: TextStyle(
                           fontSize: selectedFontSize - 2,
@@ -146,8 +145,16 @@ class LoginScreen extends StatelessWidget {
                               height: 1.5,
                               fontWeight: FontWeight.bold),
                           recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              _launchURL('https://example.com/privacy');
+                            ..onTap = () async {
+                              final Uri uri =
+                                  Uri.parse('https://example.com/privacy');
+                              await launchUrl(
+                                uri,
+                                mode: LaunchMode.externalApplication,
+                              ).catchError((_) async {
+                                return await launchUrl(uri,
+                                    mode: LaunchMode.inAppWebView);
+                              });
                             },
                         ),
                         TextSpan(
@@ -161,7 +168,7 @@ class LoginScreen extends StatelessWidget {
                                 fontWeight: FontWeight.bold)),
                         TextSpan(
                           text: selectedLanguage == 'hi'
-                              ? 'शर्तें'
+                              ? 'शर्तें '
                               : 'Terms & Conditions',
                           style: TextStyle(
                               color: Colors.deepPurple,
@@ -171,15 +178,22 @@ class LoginScreen extends StatelessWidget {
                               height: 1.5,
                               fontWeight: FontWeight.bold),
                           recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              _launchURL('https://example.com/terms');
+                            ..onTap = () async {
+                              final Uri uri =
+                                  Uri.parse('https://example.com/terms');
+                              await launchUrl(
+                                uri,
+                                mode: LaunchMode.externalApplication,
+                              ).catchError((_) async {
+                                return await launchUrl(uri,
+                                    mode: LaunchMode.inAppWebView);
+                              });
                             },
                         ),
                         TextSpan(
                           text: selectedLanguage == 'hi' ? 'सहमत हैं' : '',
                           style: TextStyle(
                               color: bottomTextColor,
-                              decoration: TextDecoration.underline,
                               letterSpacing: 0.5,
                               wordSpacing: 1.5,
                               height: 1.5,
@@ -193,7 +207,6 @@ class LoginScreen extends StatelessWidget {
                     ),
                     textAlign: TextAlign.center,
                   ),
-
                   const SizedBox(height: 20),
                 ],
               ),

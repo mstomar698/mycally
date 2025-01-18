@@ -174,42 +174,90 @@ class _LanguageSelectorScreenState extends State<LanguageSelectorScreen> {
           const SizedBox(height: 20),
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             Wrap(
-              spacing: 10,
-              children: _selectedLanguage == 'hi'
-                  ? hiFontSizes.entries.map((entry) {
-                      return ChoiceChip(
-                        label: Text(
-                          entry.key,
-                          style: TextStyle(fontSize: entry.value),
-                        ),
-                        selected: _selectedFontSize == entry.value,
-                        onSelected: (_) {
-                          setState(() {
-                            _selectedFontSize = entry.value;
-                          });
-                          settingsProvider.setFontSize(entry.value);
-                          LocalizationService.setFontSize(entry.value);
-                        },
-                      );
-                    }).toList()
-                  : enFontSizes.entries.map((entry) {
-                      return ChoiceChip(
-                        label: Text(
-                          entry.key,
-                          style: TextStyle(fontSize: entry.value),
-                        ),
-                        selected: _selectedFontSize == entry.value,
-                        onSelected: (_) {
-                          setState(() {
-                            _selectedFontSize = entry.value;
-                          });
-                          settingsProvider.setFontSize(entry.value);
-                          LocalizationService.setFontSize(entry.value);
-                        },
-                      );
-                    }).toList(),
-            ),
-          ])
+                spacing: 10,
+                children: _selectedLanguage == 'hi'
+                    ? [
+                        ...hiFontSizes.entries.take(2).map((entry) {
+                          return ChoiceChip(
+                            label: Text(
+                              entry.key,
+                              style: TextStyle(fontSize: entry.value),
+                            ),
+                            selected: _selectedFontSize == entry.value,
+                            onSelected: (_) {
+                              setState(() {
+                                _selectedFontSize = entry.value;
+                              });
+                              settingsProvider.setFontSize(entry.value);
+                              LocalizationService.setFontSize(entry.value);
+                            },
+                          );
+                        }),
+                      ]
+                    : [
+                        ...enFontSizes.entries.take(2).map((entry) {
+                          return ChoiceChip(
+                            label: Text(
+                              entry.key,
+                              style: TextStyle(fontSize: entry.value),
+                            ),
+                            selected: _selectedFontSize == entry.value,
+                            onSelected: (_) {
+                              setState(() {
+                                _selectedFontSize = entry.value;
+                              });
+                              settingsProvider.setFontSize(entry.value);
+                              LocalizationService.setFontSize(entry.value);
+                            },
+                          );
+                        }),
+                      ]),
+          ]),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Wrap(
+                  spacing: 10,
+                  children: _selectedLanguage == 'hi'
+                      ? [
+                          ...hiFontSizes.entries.skip(2).map((entry) {
+                            return ChoiceChip(
+                              label: Text(
+                                entry.key,
+                                style: TextStyle(fontSize: entry.value),
+                              ),
+                              selected: _selectedFontSize == entry.value,
+                              onSelected: (_) {
+                                setState(() {
+                                  _selectedFontSize = entry.value;
+                                });
+                                settingsProvider.setFontSize(entry.value);
+                                LocalizationService.setFontSize(entry.value);
+                              },
+                            );
+                          }),
+                        ]
+                      : [
+                          ...enFontSizes.entries.skip(2).map((entry) {
+                            return ChoiceChip(
+                              label: Text(
+                                entry.key,
+                                style: TextStyle(fontSize: entry.value),
+                              ),
+                              selected: _selectedFontSize == entry.value,
+                              onSelected: (_) {
+                                setState(() {
+                                  _selectedFontSize = entry.value;
+                                });
+                                settingsProvider.setFontSize(entry.value);
+                                LocalizationService.setFontSize(entry.value);
+                              },
+                            );
+                          }),
+                        ]),
+            ],
+          )
         ],
       ),
     );
