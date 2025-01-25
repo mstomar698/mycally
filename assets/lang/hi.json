@@ -5,5 +5,21 @@
   "select_language": "भाषा चुनें",
   "select_font_size": "फ़ॉन्ट आकार चुनें",
   "select_theme": "थीम चुनें",
-  "continue": "आगे बढ़ें"
+  "continue": "आगे बढ़ें",
+  "home": "होम",
+  "analysis": "विश्लेषण",
+  "reports": "रिपोर्ट",
+  "settings": "सेटिंग्स",
+  "general": "सामान्य",
+  "legal": "कानूनी",
+  "privacy_policy": "गोपनीयता नीति",
+  "terms_conditions": "नियम और शर्तें",
+  "account": "खाता",
+  "logout": "लॉग आउट",
+  "delete_account": "खाता हटाएं",
+  "not_logged_in": "आप लॉग इन नहीं हैं।",
+  "app_info": "ऐप जानकारी",
+  "app_version": "ऐप संस्करण",
+  "update_now": "अपडेट करें",
+  "update_available": "अपडेट उपलब्ध!"
 }

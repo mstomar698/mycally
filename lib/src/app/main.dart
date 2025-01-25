@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
       localizationsDelegates: context.localizationDelegates,
       home: const SplashScreen(),
       routes: {
-        '/home': (context) => const HomePage(),
+        '/home': (context) => const HomeScreen(),
       },
       debugShowCheckedModeBanner: false,
     );

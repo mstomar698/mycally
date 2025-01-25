@@ -13,30 +13,23 @@ class LocalizationService {
   static Future<void> loadPreferences(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
 
-    // Obtain the SettingsProvider instance
     final settingsProvider =
         Provider.of<SettingsProvider>(context, listen: false);
 
-    // 1. Load language
     String? languageCode = prefs.getString(_languageCodeKey);
     if (languageCode != null) {
-      // Update Easy Localization
       if (context.mounted) {
         context.setLocale(Locale(languageCode));
       }
-      // Also update SettingsProvider
       settingsProvider.setLocale(Locale(languageCode));
     }
 
-    // 2. Load theme
     String? theme = prefs.getString(_themeModeKey);
     if (theme != null) {
-      // Convert string to ThemeMode
       final themeMode = (theme == 'dark') ? ThemeMode.dark : ThemeMode.light;
       settingsProvider.setThemeMode(themeMode);
     }
 
-    // 3. Load font size
     double? fontSize = prefs.getDouble(_fontSizeKey);
     if (fontSize != null) {
       settingsProvider.setFontSize(fontSize);
@@ -66,5 +59,37 @@ class LocalizationService {
   static Future<bool> isLanguageSelected() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(isLanguageSetKey) ?? false;
+  }
+
+  static Future<String> getThemeMode(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final settingsProvider =
+        Provider.of<SettingsProvider>(context, listen: false);
+
+    String theme = prefs.getString(_themeModeKey) ?? 'light';
+    final themeMode = (theme == 'dark') ? ThemeMode.dark : ThemeMode.light;
+    settingsProvider.setThemeMode(themeMode);
+    return theme;
+  }
+
+  static Future<double> getFontSize(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final settingsProvider =
+        Provider.of<SettingsProvider>(context, listen: false);
+
+    double fontSize = prefs.getDouble(_fontSizeKey) ?? 16;
+    settingsProvider.setFontSize(fontSize);
+    return fontSize;
+  }
+
+  static Future<Locale> getLanguage(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final settingsProvider =
+        Provider.of<SettingsProvider>(context, listen: false);
+
+    String languageCode = prefs.getString(_languageCodeKey) ?? 'en';
+    final locale = Locale(languageCode);
+    settingsProvider.setLocale(locale);
+    return locale;
   }
 }
