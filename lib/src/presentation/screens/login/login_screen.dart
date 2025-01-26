@@ -1,29 +1,56 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:mycally/src/data/services/database.dart';
+import 'package:mycally/src/localization/localization_service.dart';
 import 'package:mycally/src/presentation/widgets/pull_to_refresh_wrapper.dart';
 import 'package:mycally/src/state/providers/settings_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:mycally/src/data/models/user.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   Future<void> _launchURL(String url) async {
     final uri = Uri.parse(url);
-
     if (await canLaunchUrl(uri)) {
-      final bool launched = await launchUrl(
-        uri,
-        mode: LaunchMode.externalApplication,
-      );
-
-      if (!launched) {
-        throw 'Could not launch $url';
-      }
-    } else {
-      throw 'Could not launch $url';
+      await launchUrl(uri, mode: LaunchMode.externalApplication)
+          .catchError((_) async {
+        return await launchUrl(uri, mode: LaunchMode.inAppWebView);
+      });
     }
+  }
+
+  Future<void> _createGuestUser(BuildContext context) async {
+    final settingsProvider =
+        Provider.of<SettingsProvider>(context, listen: false);
+
+    if (settingsProvider.currentUserId != null) {
+      Navigator.pushReplacementNamed(context, '/home');
+      return;
+    }
+
+    final newUser = User()
+      ..name = '#guest+'
+      ..createdAt = DateTime.now().millisecondsSinceEpoch
+      ..updatedAt = DateTime.now().millisecondsSinceEpoch;
+
+    await isar.writeTxn(() async {
+      final userId = await isar.users.put(newUser);
+      newUser.id = userId;
+
+      newUser.name = '#guest+$userId';
+      await isar.users.put(newUser);
+    });
+
+    debugPrint('Guest user created with ID: ${newUser.id}');
+
+    await LocalizationService.setCurrentUserId(newUser.id);
+
+    settingsProvider.setCurrentUserId(newUser.id);
+
+    Navigator.pushReplacementNamed(context, '/home');
   }
 
   @override
@@ -98,9 +125,7 @@ class LoginScreen extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushReplacementNamed(context, '/home');
-                        },
+                        onPressed: () => _createGuestUser(context),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.deepPurple,
                           padding: const EdgeInsets.symmetric(vertical: 14),
@@ -147,15 +172,7 @@ class LoginScreen extends StatelessWidget {
                                 fontWeight: FontWeight.bold),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () async {
-                                final Uri uri =
-                                    Uri.parse('https://example.com/privacy');
-                                await launchUrl(
-                                  uri,
-                                  mode: LaunchMode.externalApplication,
-                                ).catchError((_) async {
-                                  return await launchUrl(uri,
-                                      mode: LaunchMode.inAppWebView);
-                                });
+                                await _launchURL('https://example.com/privacy');
                               },
                           ),
                           TextSpan(
@@ -180,15 +197,7 @@ class LoginScreen extends StatelessWidget {
                                 fontWeight: FontWeight.bold),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () async {
-                                final Uri uri =
-                                    Uri.parse('https://example.com/terms');
-                                await launchUrl(
-                                  uri,
-                                  mode: LaunchMode.externalApplication,
-                                ).catchError((_) async {
-                                  return await launchUrl(uri,
-                                      mode: LaunchMode.inAppWebView);
-                                });
+                                await _launchURL('https://example.com/terms');
                               },
                           ),
                           TextSpan(
@@ -199,10 +208,6 @@ class LoginScreen extends StatelessWidget {
                                 wordSpacing: 1.5,
                                 height: 1.5,
                                 fontWeight: FontWeight.bold),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                _launchURL('https://example.com/terms');
-                              },
                           ),
                         ],
                       ),

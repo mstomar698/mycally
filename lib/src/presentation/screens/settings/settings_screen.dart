@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:mycally/src/data/models/user.dart';
+import 'package:mycally/src/data/services/database.dart';
 import 'package:mycally/src/localization/localization_service.dart';
 import 'package:mycally/src/presentation/widgets/pull_to_refresh_wrapper.dart';
 import 'package:mycally/src/state/providers/settings_provider.dart';
@@ -10,11 +12,9 @@ import 'package:package_info_plus/package_info_plus.dart';
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({
     super.key,
-    this.isLoggedIn = false,
     this.isLatestVersion = true,
   });
 
-  final bool isLoggedIn;
   final bool isLatestVersion;
 
   @override
@@ -68,10 +68,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _launchURL(String url) async {
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
+    await launchUrl(
+      Uri.parse(url),
+      mode: LaunchMode.externalApplication,
+    ).catchError((_) async {
+      return await launchUrl(Uri.parse(url), mode: LaunchMode.inAppWebView);
+    });
   }
 
   Future<void> _reloadData(BuildContext context) async {
@@ -80,6 +82,86 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await LocalizationService.loadPreferences(context);
 
     _fetchAppVersion();
+  }
+
+  Future<void> _handleLogout(BuildContext context) async {
+    final settingsProvider =
+        Provider.of<SettingsProvider>(context, listen: false);
+
+    // Clear current user ID from SharedPreferences
+    await LocalizationService.removeCurrentUserId();
+
+    // Clear current user ID from SettingsProvider
+    settingsProvider.clearCurrentUserId();
+
+    // Optionally, show a confirmation dialog
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(tr('logged_out'))),
+    );
+
+    // Navigate to LoginScreen
+    Navigator.pushReplacementNamed(context, '/login');
+  }
+
+  /// Delete Account Functionality
+  Future<void> _handleDeleteAccount(BuildContext context) async {
+    final settingsProvider =
+        Provider.of<SettingsProvider>(context, listen: false);
+    final currentUserId = settingsProvider.currentUserId;
+
+    if (currentUserId == null) {
+      // No user to delete
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(tr('no_user_to_delete'))),
+      );
+      return;
+    }
+
+    // Confirm Deletion
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(tr('delete_account')),
+        content: Text(tr('confirm_delete_account')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(tr('cancel')),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(tr('delete')),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    try {
+      await isar.writeTxn(() async {
+        await isar.users.delete(currentUserId);
+      });
+
+      // Clear current user ID from SharedPreferences
+      await LocalizationService.removeCurrentUserId();
+
+      // Clear current user ID from SettingsProvider
+      settingsProvider.clearCurrentUserId();
+
+      // Optionally, show a confirmation message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(tr('account_deleted'))),
+      );
+
+      // Navigate to LoginScreen
+      Navigator.pushReplacementNamed(context, '/login');
+    } catch (e) {
+      debugPrint('Error deleting account: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(tr('error_deleting_account'))),
+      );
+    }
   }
 
   @override
@@ -92,6 +174,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ? Colors.white
         : Colors.deepPurple;
     final fontSize = settingsProvider.fontSize;
+
+    final currentUserId = settingsProvider.currentUserId;
+    final isLoggedIn = currentUserId != null;
 
     return PullToRefreshWrapper(
       onRefresh: () => _reloadData(context),
@@ -146,21 +231,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 textColor: textColor,
                 fontSize: fontSize,
               ),
-              if (widget.isLoggedIn)
+              if (isLoggedIn) ...[
                 _buildAccountTile(
                   label: tr('logout'),
                   textColor: textColor,
                   fontSize: fontSize,
-                  onTap: _handleLogout,
+                  onTap: () => _handleLogout(context),
                 ),
-              if (widget.isLoggedIn)
                 _buildAccountTile(
                   label: tr('delete_account'),
                   textColor: textColor,
                   fontSize: fontSize,
-                  onTap: _handleDeleteAccount,
+                  onTap: () => _handleDeleteAccount(context),
                 ),
-              if (!widget.isLoggedIn)
+              ] else ...[
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Text(
@@ -172,6 +256,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                 ),
+              ],
               const SizedBox(height: 20),
               _buildSectionHeader(
                 title: tr('app_info'),
@@ -420,13 +505,5 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       ),
     );
-  }
-
-  void _handleLogout() {
-    debugPrint('Logged out');
-  }
-
-  void _handleDeleteAccount() {
-    debugPrint('Account deleted');
   }
 }

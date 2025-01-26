@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:mycally/src/data/models/user.dart';
+import 'package:mycally/src/data/services/database.dart';
 import 'package:mycally/src/localization/localization_service.dart';
+import 'package:mycally/src/presentation/screens/home/home_screen.dart';
 import 'package:mycally/src/presentation/screens/language_selector/language_selector_screen.dart';
 import 'package:mycally/src/presentation/screens/login/login_screen.dart';
 import 'package:mycally/src/state/providers/settings_provider.dart';
@@ -34,6 +37,14 @@ class _SplashScreenState extends State<SplashScreen>
 
     _isLanguageSet = await LocalizationService.isLanguageSelected();
 
+    final currentUserId = await LocalizationService.getCurrentUserId();
+
+    User? currentUser;
+
+    if (currentUserId != null) {
+      currentUser = await isar.users.get(currentUserId);
+    }
+
     _fadeController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
@@ -43,14 +54,22 @@ class _SplashScreenState extends State<SplashScreen>
     _fadeController.forward();
 
     setState(() => _isLoadingPrefs = false);
+    await Future.delayed(const Duration(seconds: 2));
 
-    if (_isLanguageSet) {
-      await Future.delayed(const Duration(seconds: 2));
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
-        );
+    if (currentUser != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } else {
+      if (_isLanguageSet) {
+        await Future.delayed(const Duration(seconds: 2));
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+          );
+        }
       }
     }
   }
@@ -72,12 +91,7 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     final settingsProvider = Provider.of<SettingsProvider>(context);
     final Size screenSize = MediaQuery.of(context).size;
-    final String selectedLanguage = settingsProvider.locale.languageCode;
-    final double selectedFontSize = settingsProvider.fontSize;
-    final ThemeMode selectedThemeMode = settingsProvider.themeMode;
-    print('selectedLanguage: $selectedLanguage, '
-        'selectedFontSize: $selectedFontSize, '
-        'selectedThemeMode: $selectedThemeMode, from splash screen');
+
     final backgroundColor = settingsProvider.themeMode == ThemeMode.dark
         ? Colors.black
         : Colors.white;

@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:mycally/src/state/providers/settings_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:mycally/src/config/constants.dart';
 
 class LocalizationService {
   static const String _languageCodeKey = 'languageCode';
   static const String _themeModeKey = 'themeMode';
   static const String _fontSizeKey = 'fontSize';
+  static const String _isLanguageSetKey = 'isLanguageSet';
+
+  static const String _currentUserIdKey = 'currentUserId';
 
   static Future<void> loadPreferences(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
@@ -34,6 +36,11 @@ class LocalizationService {
     if (fontSize != null) {
       settingsProvider.setFontSize(fontSize);
     }
+
+    int? userId = prefs.getInt(_currentUserIdKey);
+    if (userId != null) {
+      settingsProvider.setCurrentUserId(userId);
+    }
   }
 
   static Future<void> setLanguage(Locale locale) async {
@@ -53,12 +60,12 @@ class LocalizationService {
 
   static Future<void> setLanguageSelected(bool isSet) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(isLanguageSetKey, isSet);
+    await prefs.setBool(_isLanguageSetKey, isSet);
   }
 
   static Future<bool> isLanguageSelected() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(isLanguageSetKey) ?? false;
+    return prefs.getBool(_isLanguageSetKey) ?? false;
   }
 
   static Future<String> getThemeMode(BuildContext context) async {
@@ -91,5 +98,20 @@ class LocalizationService {
     final locale = Locale(languageCode);
     settingsProvider.setLocale(locale);
     return locale;
+  }
+
+  static Future<void> setCurrentUserId(int userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_currentUserIdKey, userId);
+  }
+
+  static Future<int?> getCurrentUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_currentUserIdKey);
+  }
+
+  static Future<void> removeCurrentUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_currentUserIdKey);
   }
 }
