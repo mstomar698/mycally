@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mycally/src/presentation/screens/edit_profile/edit_profile_screen.dart';
+import 'package:mycally/src/presentation/screens/edit_vendor/edit_vendor_screen.dart';
 import 'package:mycally/src/presentation/screens/login/login_screen.dart';
 import 'package:mycally/src/presentation/screens/profile/profile_screen.dart';
 import 'package:mycally/src/presentation/screens/vendors/vendors_screen.dart';
@@ -51,6 +52,7 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => const ProfileScreen(),
         '/edit_profile': (context) => const EditProfileScreen(),
         '/vendors': (context) => const VendorsScreen(),
+        '/edit_vendor': (context) => const EditVendorScreen(),
       },
       debugShowCheckedModeBanner: false,
     );

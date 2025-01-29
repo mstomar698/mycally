@@ -1,4 +1,6 @@
 // ignore_for_file: deprecated_member_use
+import 'dart:convert';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:mycally/src/data/models/user.dart';
@@ -107,15 +109,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       CircleAvatar(
                         radius: 50,
                         backgroundColor: Colors.deepPurple,
-                        child: Text(
-                          user.name.isNotEmpty
-                              ? user.name[0].toUpperCase()
-                              : 'U',
-                          style: TextStyle(
-                            fontSize: fontSize + 20,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(75),
+                          child: user.profileImage != null
+                              ? Image.memory(
+                                  base64Decode(user.profileImage!),
+                                  height: 150,
+                                  width: 150,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Image.asset(
+                                      'assets/images/default_profile.jpg',
+                                      height: 150,
+                                      width: 150,
+                                      fit: BoxFit.cover,
+                                    );
+                                  },
+                                )
+                              : Image.asset(
+                                  'assets/images/default_profile.jpg',
+                                  height: 150,
+                                  width: 150,
+                                  fit: BoxFit.cover,
+                                ),
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -126,11 +142,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           color: textColor.withOpacity(0.7),
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 40),
                       _buildUserField(
                           tr('name'), user.name, textColor, fontSize),
-                      // _buildUserField(tr('email'), user.email, textColor, fontSize),
-                      // _buildUserField(tr('phone'), user.phone, textColor, fontSize),
+                      _buildUserField(tr('phone'), user.mobileNumber ?? '-',
+                          textColor, fontSize),
+                      _buildUserField(
+                          tr('email'), user.email ?? '-', textColor, fontSize),
+                      _buildUserField(
+                          tr('dob'),
+                          user.dob != null
+                              ? DateFormat.yMMMd().format(
+                                  DateTime.fromMillisecondsSinceEpoch(
+                                      user.dob!))
+                              : '-',
+                          textColor,
+                          fontSize),
+                      _buildUserField(
+                        tr('vendors'),
+                        user.vendors.isEmpty
+                            ? tr('no_vendors_attached')
+                            : user.vendors.length > 3
+                                ? '${user.vendors.take(3).map((v) => v.name).join(', ')}...'
+                                : user.vendors.map((v) => v.name).join(', '),
+                        textColor,
+                        fontSize,
+                      ),
+                      _buildUserField(
+                          tr('joined_at'),
+                          user.createdAt != null
+                              ? DateFormat.yMMMd().format(
+                                  DateTime.fromMillisecondsSinceEpoch(
+                                      user.createdAt!))
+                              : '-',
+                          textColor,
+                          fontSize),
+                      _buildUserField(
+                          tr('updated_at'),
+                          user.updatedAt != null
+                              ? DateFormat.yMMMd().format(
+                                  DateTime.fromMillisecondsSinceEpoch(
+                                      user.updatedAt!))
+                              : '-',
+                          textColor,
+                          fontSize),
                       const SizedBox(height: 40),
                       SizedBox(
                         width: double.infinity,
