@@ -33,6 +33,7 @@
   "updated_at": "अपडेट किया गया",
   "no_vendors_attached": "कोई विक्रेता संलग्न नहीं",
   "error_loading_profile": "प्रोफ़ाइल लोड करने में त्रुटि हुई।",
+  "error_loading_homepage": "होम पेज लोड करने में त्रुटि हुई।",
   "no_user_found": "कोई उपयोगकर्ता नहीं मिला।",
   "logged_out": "आप लॉग आउट हो गए हैं।",
   "no_user_to_delete": "मिटाने के लिए कोई उपयोगकर्ता नहीं मिला।",
@@ -67,12 +68,14 @@
   "key": "कुंजी",
   "value": "मूल्य",
   "add": "जोड़ें",
-  "total_expense_this_month": "इस माह की कुल खर्च",
-  "greeting": "नमस्ते, %s!",
-  "cta_text": "CTA पाठ",
+  "total_expense_this_month": "{} माह का कुल खर्च",
+  "greeting": "नमस्ते, {}!",
+  "cta_text": "माईकैली में आपका स्वागत है",
   "view_all": "सभी देखें",
   "vendor_list": "विक्रेता सूची",
   "amount_delivered": "डिलीवर की गई मात्रा",
   "hide_vendor": "विक्रेता छुपाएँ",
-  "vendor_details": "विक्रेता विवरण"
+  "vendor_details": "विक्रेता विवरण",
+  "close_calendar": "कैलेंडर बंद करें",
+  "view_analysis": "विश्लेषण देखें"
 }

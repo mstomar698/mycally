@@ -33,6 +33,7 @@
   "updated_at": "Updated At",
   "no_vendors_attached": "No vendors attached",
   "error_loading_profile": "Error loading profile.",
+  "error_loading_homepage": "Error loading Home Page.",
   "no_user_found": "No user found.",
   "logged_out": "You have been logged out.",
   "no_user_to_delete": "No user found to delete.",
@@ -65,12 +66,14 @@
   "key": "Key",
   "value": "Value",
   "add": "Add",
-  "total_expense_this_month": "Total Expense (This Month)",
-  "greeting": "Hi, %s!",
-  "cta_text": "CTA Text",
+  "total_expense_this_month": "Total Expense ({})",
+  "greeting": "Hi, {}!",
+  "cta_text": "Welcome to MyCally!",
   "view_all": "View All",
   "vendor_list": "Vendor List",
   "amount_delivered": "Amount Delivered",
   "hide_vendor": "Hide Vendor",
-  "vendor_details": "Vendor Details"
+  "vendor_details": "Vendor Details",
+  "close_calendar": "Close Calendar",
+  "view_analysis": "View Analysis"
 }
