@@ -25,6 +25,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _mobileController;
   late TextEditingController _emailController;
   late TextEditingController _dobController;
+  int _currentIndex = 2;
 
   File? _profileImageFile;
   User? _currentUser;
@@ -35,6 +36,42 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void initState() {
     super.initState();
     _loadUserAndData();
+  }
+
+  void _onTabTapped(int index) {
+    if (index == _currentIndex) {
+      return;
+    }
+
+    setState(() {
+      _currentIndex = index;
+    });
+
+    switch (index) {
+      case 2:
+        break;
+      case 0:
+        Navigator.pushNamed(
+          context,
+          '/home',
+          arguments: index,
+        );
+        break;
+      case 1:
+        Navigator.pushNamed(
+          context,
+          '/profile',
+          arguments: index,
+        );
+        break;
+      case 3:
+        Navigator.pushNamed(
+          context,
+          '/vendors',
+          arguments: index,
+        );
+        break;
+    }
   }
 
   Future<void> _loadUserAndData() async {
@@ -135,10 +172,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _currentUser!.profileImage = base64Image;
       }
 
-     await _currentUser!.vendors.load();
-    _currentUser!.vendors.clear(); 
-    _currentUser!.vendors.addAll(_selectedVendors);
-    await _currentUser!.vendors.save(); 
+      await _currentUser!.vendors.load();
+      _currentUser!.vendors.clear();
+      _currentUser!.vendors.addAll(_selectedVendors);
+      await _currentUser!.vendors.save();
       await isar.users.put(_currentUser!);
     });
 
@@ -163,6 +200,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           tr('edit_profile'),
           style: TextStyle(color: textColor),
@@ -289,6 +327,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ],
               ),
             ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        backgroundColor: backgroundColor,
+        selectedItemColor: Colors.deepPurple,
+        unselectedItemColor: textColor.withOpacity(0.6),
+        onTap: _onTabTapped,
+        items: [
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.home),
+            label: tr('home'),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.person),
+            label: tr('profile'),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.edit),
+            label: tr('edit_profile'),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.business),
+            label: tr('vendors'),
+          ),
+        ],
+      ),
     );
   }
 

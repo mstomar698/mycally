@@ -18,6 +18,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   Future<User?>? _userFuture;
+  int _currentIndex = 1;
 
   @override
   void initState() {
@@ -44,6 +45,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await _userFuture;
   }
 
+  void _onTabTapped(int index) {
+    if (index == _currentIndex) {
+      return;
+    }
+
+    setState(() {
+      _currentIndex = index;
+    });
+
+    switch (index) {
+      case 1:
+        break;
+      case 0 || 3:
+        Navigator.pushNamed(
+          context,
+          '/home',
+          arguments: index,
+        );
+        break;
+      case 2:
+        Navigator.pushNamed(
+          context,
+          '/vendors',
+          arguments: index,
+        );
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final settingsProvider = Provider.of<SettingsProvider>(context);
@@ -63,6 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           backgroundColor: backgroundColor,
           iconTheme: IconThemeData(color: textColor),
           elevation: 0,
+          automaticallyImplyLeading: false,
           title: Text(
             tr('profile'),
             style: TextStyle(
@@ -240,6 +271,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
               }
             },
           ),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          backgroundColor: backgroundColor,
+          selectedItemColor: Colors.deepPurple,
+          unselectedItemColor: textColor.withOpacity(0.6),
+          onTap: _onTabTapped,
+          items: [
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.home),
+              label: tr('home'),
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.person),
+              label: tr('profile'),
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.business),
+              label: tr('vendors'),
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.settings),
+              label: tr('settings'),
+            ),
+          ],
         ),
       ),
     );

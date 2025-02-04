@@ -17,6 +17,7 @@ class VendorsScreen extends StatefulWidget {
 class _VendorsScreenState extends State<VendorsScreen> {
   List<Vendor> _vendors = [];
   String _searchQuery = '';
+  int _currentIndex = 2;
 
   @override
   void initState() {
@@ -47,7 +48,7 @@ class _VendorsScreenState extends State<VendorsScreen> {
   }
 
   void _editVendor(Vendor vendor) {
-    print('${vendor.id} vendor id');
+    debugPrint('${vendor.id} vendor id');
     Navigator.pushNamed(
       context,
       '/edit_vendor',
@@ -85,6 +86,35 @@ class _VendorsScreenState extends State<VendorsScreen> {
     }
   }
 
+  void _onTabTapped(int index) {
+    if (index == _currentIndex) {
+      return;
+    }
+
+    setState(() {
+      _currentIndex = index;
+    });
+
+    switch (index) {
+      case 2:
+        break;
+      case 0 || 3:
+        Navigator.pushNamed(
+          context,
+          '/home',
+          arguments: index,
+        );
+        break;
+      case 1:
+        Navigator.pushNamed(
+          context,
+          '/profile',
+          arguments: index,
+        );
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final settingsProvider = Provider.of<SettingsProvider>(context);
@@ -99,6 +129,7 @@ class _VendorsScreenState extends State<VendorsScreen> {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           tr('vendors'),
           style: TextStyle(color: textColor),
@@ -187,6 +218,31 @@ class _VendorsScreenState extends State<VendorsScreen> {
                       );
                     },
                   ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        backgroundColor: backgroundColor,
+        selectedItemColor: Colors.deepPurple,
+        unselectedItemColor: textColor.withOpacity(0.6),
+        onTap: _onTabTapped,
+        items: [
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.home),
+            label: tr('home'),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.person),
+            label: tr('profile'),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.business),
+            label: tr('vendors'),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.settings),
+            label: tr('settings'),
           ),
         ],
       ),

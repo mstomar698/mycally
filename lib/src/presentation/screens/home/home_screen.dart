@@ -26,12 +26,28 @@ class _HomeScreenState extends State<HomeScreen> {
   DateTime _selectedDate = DateTime.now();
   CalendarFormat _calendarFormat = CalendarFormat.month;
   Future<User?>? _userFuture;
-  String _totalExpance = '₹2,450';
+  final String _totalExpance = '₹2,450';
 
   @override
   void initState() {
     super.initState();
     _loadUser();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadCurrentIndex();
+    });
+  }
+
+  void _loadCurrentIndex() {
+    final passedCurrentIndex = ModalRoute.of(context)?.settings.arguments;
+    if (passedCurrentIndex is int) {
+      debugPrint('Editing vendor ID: $passedCurrentIndex');
+      setState(() {
+        _currentIndex = passedCurrentIndex;
+      });
+    } else {
+      debugPrint('No Id passed, using default index');
+      _currentIndex = _currentIndex;
+    }
   }
 
   void _loadUser() {
@@ -74,9 +90,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _handleNavigateToAnalysis() {
-    // Navigator.of(context).findAncestorStateOfType<HomeScreenState>()?.setState(() {
-    //           _currentIndex = 1;
-    //         });
     setState(() {
       _currentIndex = 1;
     });
@@ -92,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ? Colors.white
         : Colors.deepPurple;
     final fontSize = settingsProvider.fontSize;
-
+    print('Current Index $_currentIndex');
     return PullToRefreshWrapper(
       onRefresh: _refresh,
       child: Scaffold(

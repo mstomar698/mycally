@@ -186,6 +186,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           backgroundColor: backgroundColor,
           iconTheme: IconThemeData(color: textColor),
           elevation: 0,
+          automaticallyImplyLeading: false,
           title: Text(
             tr('settings'),
             style: TextStyle(

@@ -20,6 +20,7 @@ class _EditVendorScreenState extends State<EditVendorScreen> {
   final _mobileController = TextEditingController();
   final _emailController = TextEditingController();
   final _customTypeController = TextEditingController();
+  int _currentIndex = 2;
 
   Map<String, String> _additionalInfoMap = {};
 
@@ -75,6 +76,42 @@ class _EditVendorScreenState extends State<EditVendorScreen> {
     _emailController.dispose();
     _customTypeController.dispose();
     super.dispose();
+  }
+
+  void _onTabTapped(int index) {
+    if (index == _currentIndex) {
+      return;
+    }
+
+    setState(() {
+      _currentIndex = index;
+    });
+
+    switch (index) {
+      case 2:
+        break;
+      case 0:
+        Navigator.pushNamed(
+          context,
+          '/home',
+          arguments: index,
+        );
+        break;
+      case 1:
+        Navigator.pushNamed(
+          context,
+          '/vendors',
+          arguments: index,
+        );
+        break;
+      case 3:
+        Navigator.pushNamed(
+          context,
+          '/profile',
+          arguments: index,
+        );
+        break;
+    }
   }
 
   Future<void> _saveVendor() async {
@@ -200,6 +237,7 @@ class _EditVendorScreenState extends State<EditVendorScreen> {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           isEditing ? tr('edit_vendor') : tr('create_vendor'),
           style: TextStyle(color: textColor),
@@ -311,6 +349,31 @@ class _EditVendorScreenState extends State<EditVendorScreen> {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        backgroundColor: backgroundColor,
+        selectedItemColor: Colors.deepPurple,
+        unselectedItemColor: textColor.withOpacity(0.6),
+        onTap: _onTabTapped,
+        items: [
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.home),
+            label: tr('home'),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.business),
+            label: tr('vendors'),
+          ),
+          BottomNavigationBarItem(
+            icon: isEditing ?  Icon(Icons.edit) : Icon(Icons.add),
+            label: isEditing ? tr('edit_vendor') : tr('create_vendor'),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.person),
+            label: tr('profile'),
+          ),
+        ],
       ),
     );
   }
