@@ -64,5 +64,13 @@
   "no_additional_info": "No additional info",
   "key": "Key",
   "value": "Value",
-  "add": "Add"
+  "add": "Add",
+  "total_expense_this_month": "Total Expense (This Month)",
+  "greeting": "Hi, %s!",
+  "cta_text": "CTA Text",
+  "view_all": "View All",
+  "vendor_list": "Vendor List",
+  "amount_delivered": "Amount Delivered",
+  "hide_vendor": "Hide Vendor",
+  "vendor_details": "Vendor Details"
 }

@@ -66,5 +66,13 @@
   "vendor_created_successfully": "विक्रेता सफलतापूर्वक बनाया गया",
   "key": "कुंजी",
   "value": "मूल्य",
-  "add": "जोड़ें"
+  "add": "जोड़ें",
+  "total_expense_this_month": "इस माह की कुल खर्च",
+  "greeting": "नमस्ते, %s!",
+  "cta_text": "CTA पाठ",
+  "view_all": "सभी देखें",
+  "vendor_list": "विक्रेता सूची",
+  "amount_delivered": "डिलीवर की गई मात्रा",
+  "hide_vendor": "विक्रेता छुपाएँ",
+  "vendor_details": "विक्रेता विवरण"
 }
