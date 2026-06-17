@@ -4,9 +4,11 @@ plugins {
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
 }
+
 def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file('key.properties')
-if (keystorePropertiesFile.exists()) {
+def hasKeystore = keystorePropertiesFile.exists()
+if (hasKeystore) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
@@ -30,7 +32,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace = "my.cally.app"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -50,31 +52,35 @@ android {
         versionName = flutter.versionName
     }
 
-   signingConfigs {
-        debug {
-            keyAlias keystoreProperties['MY_CALLY_UPLOAD_KEY_ALIAS_DEBUG']
-            keyPassword keystoreProperties['MY_CALLY_UPLOAD_KEY_PASSWORD_DEBUG']
-            storeFile keystoreProperties['MY_CALLY_UPLOAD_STORE_FILE_DEBUG'] \
-                ? file(keystoreProperties['MY_CALLY_UPLOAD_STORE_FILE_DEBUG']) : null
-            storePassword keystoreProperties['MY_CALLY_UPLOAD_STORE_PASSWORD_DEBUG']
-        }
-        release {
-            keyAlias keystoreProperties['MY_CALLY_UPLOAD_KEY_ALIAS_PROD']
-            keyPassword keystoreProperties['MY_CALLY_UPLOAD_KEY_PASSWORD_PROD']
-            storeFile keystoreProperties['MY_CALLY_UPLOAD_STORE_FILE_PROD'] \
-                ? file(keystoreProperties['MY_CALLY_UPLOAD_STORE_FILE_PROD']) : null
-            storePassword keystoreProperties['MY_CALLY_UPLOAD_STORE_PASSWORD_PROD']
+    if (hasKeystore) {
+        signingConfigs {
+            debug {
+                keyAlias keystoreProperties['MY_CALLY_UPLOAD_KEY_ALIAS_DEBUG']
+                keyPassword keystoreProperties['MY_CALLY_UPLOAD_KEY_PASSWORD_DEBUG']
+                storeFile file(keystoreProperties['MY_CALLY_UPLOAD_STORE_FILE_DEBUG'])
+                storePassword keystoreProperties['MY_CALLY_UPLOAD_STORE_PASSWORD_DEBUG']
+            }
+            release {
+                keyAlias keystoreProperties['MY_CALLY_UPLOAD_KEY_ALIAS_PROD']
+                keyPassword keystoreProperties['MY_CALLY_UPLOAD_KEY_PASSWORD_PROD']
+                storeFile file(keystoreProperties['MY_CALLY_UPLOAD_STORE_FILE_PROD'])
+                storePassword keystoreProperties['MY_CALLY_UPLOAD_STORE_PASSWORD_PROD']
+            }
         }
     }
 
     buildTypes {
         debug {
-            signingConfig signingConfigs.debug
+            if (hasKeystore) {
+                signingConfig signingConfigs.debug
+            }
             minifyEnabled false
             shrinkResources false
         }
         release {
-            signingConfig signingConfigs.release
+            if (hasKeystore) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),

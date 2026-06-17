@@ -18,11 +18,14 @@
 
 ## 2. E2E integration tests — Android emulator required
 
-**Status:** Open.
+**Status:** Fixed signing + compileSdk for CI (PR pending). Workflow: `.github/workflows/e2e-android.yml`.
 
-**Symptom:** `flutter test integration_test` fails locally on Windows without a connected device. Chrome/web is not supported by `integration_test`.
+**Previous failure (2026-06-17):** `assembleDebug` failed on CI with:
+- `SigningConfig "debug" is missing required property "storeFile"` — custom debug signing in
+  `android/app/build.gradle` required local `key.properties` not present on GitHub Actions.
+- `integration_test` plugin requires `compileSdk 36`; project was on 34.
 
-**Workflow:** `.github/workflows/e2e-android.yml` uses `reactivecircus/android-emulator-runner` on Ubuntu CI.
+**Fix:** Only apply custom `signingConfigs` when `key.properties` exists; bump `compileSdk` to 36.
 
 **To run locally:**
 1. Install Android SDK + emulator (Android Studio).
