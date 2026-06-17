@@ -26,7 +26,7 @@ class _VendorsScreenState extends State<VendorsScreen> {
   }
 
   Future<void> _loadVendors() async {
-    final vendors = await isar.vendors.where().findAll();
+    final vendors = await isar.vendors.where().anyId().findAll();
 
     setState(() {
       _vendors = vendors;

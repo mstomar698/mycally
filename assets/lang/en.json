@@ -75,5 +75,14 @@
   "hide_vendor": "Hide Vendor",
   "vendor_details": "Vendor Details",
   "close_calendar": "Close Calendar",
-  "view_analysis": "View Analysis"
+  "view_analysis": "View Analysis",
+  "add_expense": "Add Expense",
+  "amount": "Amount",
+  "category": "Category",
+  "uncategorized": "Uncategorized",
+  "note": "Note",
+  "add_receipt_photo": "Add Receipt Photo",
+  "photo_attached": "Photo attached",
+  "expenses_for_selected_day": "Expenses for selected day",
+  "no_expenses_for_day": "No expenses recorded for this day"
 }
