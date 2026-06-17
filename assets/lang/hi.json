@@ -86,5 +86,15 @@
   "add_receipt_photo": "रसीद फोटो जोड़ें",
   "photo_attached": "फोटो जुड़ गई है",
   "expenses_for_selected_day": "चयनित दिन के खर्च",
-  "no_expenses_for_day": "इस दिन के लिए कोई खर्च दर्ज नहीं है"
+  "no_expenses_for_day": "इस दिन के लिए कोई खर्च दर्ज नहीं है",
+  "category_breakdown": "श्रेणी विवरण",
+  "daily_spend": "दैनिक खर्च",
+  "month_over_month": "माह-दर-माह तुलना",
+  "no_expenses_for_analysis": "इस अवधि के लिए कोई खर्च दर्ज नहीं है",
+  "date_range": "तिथि सीमा",
+  "category_summary": "श्रेणी सारांश",
+  "largest_expenses": "सबसे बड़े खर्च",
+  "total_spent": "कुल खर्च",
+  "daily_average": "दैनिक औसत",
+  "transactions": "लेन-देन"
 }

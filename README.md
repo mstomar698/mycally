@@ -8,13 +8,15 @@ MyCally is a **local-first personal-finance diary** for Flutter: log day-wise
 purchases on a calendar and review where your money goes, all offline and on your
 device. No accounts, no cloud, no ads. Bilingual (English / हिन्दी).
 
-> **🚧 Early development.** Core expense capture and calendar wiring are in place;
-> analysis/report charts are still being built. See the roadmap below.
+> **🚧 Early development.** Core expense capture, calendar wiring, and analysis/reports
+> charts are in place; polish and data portability are next. See the roadmap below.
 
 ## Features
 
 - 📅 Calendar-based daily expense diary with real persisted entries
 - ➕ Add expenses (amount, category/payee, note, optional receipt photo)
+- 📊 Analysis charts — category breakdown, daily spend, month-over-month
+- 📋 Reports — date-range summary, category totals, largest expenses
 - 🌐 Localized UI — English & Hindi (`easy_localization`)
 - 🎨 Light/dark themes and adjustable font size, persisted across launches
 - 💾 Local-first storage with [Isar](https://isar.dev) — works fully offline
@@ -46,7 +48,7 @@ flutter test integration_test   # requires Android emulator/device
 ## Roadmap
 
 1. ~~**Core diary**~~ — expense model + capture flow; calendar wired to real data.
-2. **Insights** — analysis & report charts from recorded expenses.
+2. ~~**Insights**~~ — analysis & report charts from recorded expenses.
 3. **Daily utility** — categories, recurring entries, budgets and reminders.
 4. **Data portability** — CSV/PDF export, encrypted backup & restore.
 
