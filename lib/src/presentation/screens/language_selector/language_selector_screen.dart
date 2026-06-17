@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mycally/src/localization/localization_service.dart';
+import 'package:mycally/src/presentation/widgets/mycally_logo.dart';
 import 'package:mycally/src/presentation/widgets/pull_to_refresh_wrapper.dart';
 import 'package:mycally/src/state/providers/settings_provider.dart';
 import 'package:mycally/src/presentation/screens/login/login_screen.dart';
@@ -48,11 +49,7 @@ class _LanguageSelectorScreenState extends State<LanguageSelectorScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Center(
-                  child: Image.asset(
-                    'assets/images/mycally_logo.png',
-                    height: 40,
-                    width: 40,
-                  ),
+                  child: const MycallyLogo(size: 40),
                 ),
                 const SizedBox(height: 20),
                 Expanded(

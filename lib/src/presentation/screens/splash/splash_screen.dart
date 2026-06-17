@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:mycally/src/data/models/user.dart';
 import 'package:mycally/src/data/services/database.dart';
+import 'package:mycally/src/presentation/widgets/mycally_logo.dart';
 import 'package:mycally/src/localization/localization_service.dart';
 import 'package:mycally/src/presentation/screens/home/home_screen.dart';
 import 'package:mycally/src/presentation/screens/language_selector/language_selector_screen.dart';
@@ -120,11 +121,7 @@ class _SplashScreenState extends State<SplashScreen>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Image.asset(
-                  'assets/images/mycally_logo.png',
-                  height: 150,
-                  width: 150,
-                ),
+                const MycallyLogo(size: 150),
                 const SizedBox(height: 20),
                 Text(
                   tr('app_name'),
@@ -152,11 +149,7 @@ class _SplashScreenState extends State<SplashScreen>
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Image.asset(
-                      'assets/images/mycally_logo.png',
-                      height: 150,
-                      width: 150,
-                    ),
+                    const MycallyLogo(size: 150),
                     const SizedBox(height: 20),
                     Text(
                       tr('app_name'),
