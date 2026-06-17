@@ -9,11 +9,12 @@ void main() {
   testWidgets('app launches and shows splash content', (tester) async {
     await app.main();
     await tester.pump();
-    await tester.pumpAndSettle(const Duration(seconds: 8));
+    await tester.pump(const Duration(seconds: 3));
+
+    expect(find.byType(MaterialApp), findsOneWidget);
 
     final hasAppName = find.textContaining('MyCally').evaluate().isNotEmpty ||
         find.textContaining('माईकैली').evaluate().isNotEmpty;
-
-    expect(hasAppName || find.byType(MaterialApp).evaluate().isNotEmpty, isTrue);
+    expect(hasAppName, isTrue);
   });
 }
