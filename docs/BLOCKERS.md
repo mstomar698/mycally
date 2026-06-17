@@ -24,8 +24,9 @@
 - `SigningConfig "debug" is missing required property "storeFile"` — custom debug signing in
   `android/app/build.gradle` required local `key.properties` not present on GitHub Actions.
 - `integration_test` plugin requires `compileSdk 36`; project was on 34.
+- `package_info_plus` 4.x fails Kotlin compile against SDK 36 — upgrade to ^8.3.
 
-**Fix:** Only apply custom `signingConfigs` when `key.properties` exists; bump `compileSdk` to 36.
+**Fix:** Only apply custom `signingConfigs` when `key.properties` exists; bump `compileSdk` to 36; upgrade `package_info_plus` to ^8.3 for Kotlin/SDK 36 compatibility.
 
 **To run locally:**
 1. Install Android SDK + emulator (Android Studio).
