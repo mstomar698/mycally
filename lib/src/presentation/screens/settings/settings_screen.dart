@@ -253,7 +253,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     style: TextStyle(
                       fontSize: fontSize,
                       // ignore: deprecated_member_use
-                      color: textColor.withOpacity(0.6),
+                      color: textColor.withValues(alpha: 0.6),
                     ),
                   ),
                 ),
@@ -473,7 +473,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               style: TextStyle(
                 fontSize: fontSize - 2,
                 // ignore: deprecated_member_use
-                color: textColor.withOpacity(0.8),
+                color: textColor.withValues(alpha: 0.8),
               ),
             )
           : null,
@@ -501,7 +501,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         style: TextStyle(
           fontSize: fontSize - 2,
           // ignore: deprecated_member_use
-          color: textColor.withOpacity(0.7),
+          color: textColor.withValues(alpha: 0.7),
           fontWeight: FontWeight.bold,
         ),
       ),

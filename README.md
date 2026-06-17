@@ -52,7 +52,8 @@ flutter test integration_test   # requires Android emulator/device
 3. **Daily utility** — categories, recurring entries, budgets and reminders.
 4. **Data portability** — CSV/PDF export, encrypted backup & restore.
 
-A detailed development brief lives in [`docs/OSS_PLAN.md`](docs/OSS_PLAN.md).
+A detailed development brief lives in [`docs/OSS_PLAN.md`](docs/OSS_PLAN.md).  
+Active blockers and environment setup notes: [`docs/BLOCKERS.md`](docs/BLOCKERS.md).
 
 ## Contributing
 

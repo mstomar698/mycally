@@ -296,7 +296,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     tr('vendors'),
                     style: TextStyle(
                       fontSize: fontSize,
-                      color: textColor.withOpacity(0.8),
+                      color: textColor.withValues(alpha: 0.8),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -331,7 +331,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         currentIndex: _currentIndex,
         backgroundColor: backgroundColor,
         selectedItemColor: Colors.deepPurple,
-        unselectedItemColor: textColor.withOpacity(0.6),
+        unselectedItemColor: textColor.withValues(alpha: 0.6),
         onTap: _onTabTapped,
         items: [
           BottomNavigationBarItem(
@@ -409,7 +409,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           tr('no_vendors_attached'),
           style: TextStyle(
             fontSize: fontSize,
-            color: textColor.withOpacity(0.6),
+            color: textColor.withValues(alpha: 0.6),
           ),
         ),
       );

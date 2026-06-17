@@ -361,7 +361,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   tr('no_user_found'),
                   style: TextStyle(
                     fontSize: fontSize,
-                    color: textColor.withOpacity(0.6),
+                    color: textColor.withValues(alpha: 0.6),
                   ),
                 ),
               );
@@ -397,7 +397,7 @@ class _HomeScreenState extends State<HomeScreen> {
           currentIndex: _currentIndex,
           backgroundColor: backgroundColor,
           selectedItemColor: Colors.deepPurple,
-          unselectedItemColor: textColor.withOpacity(0.6),
+          unselectedItemColor: textColor.withValues(alpha: 0.6),
           onTap: (index) {
             setState(() {
               _currentIndex = index;
@@ -517,7 +517,7 @@ class HomePageContent extends StatelessWidget {
           },
           calendarStyle: CalendarStyle(
             markerDecoration: BoxDecoration(
-              color: Colors.deepPurple.withOpacity(0.8),
+              color: Colors.deepPurple.withValues(alpha: 0.8),
               shape: BoxShape.circle,
             ),
           ),
@@ -678,7 +678,7 @@ class HomePageContent extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               child: Text(
                 tr('no_expenses_for_day'),
-                style: TextStyle(fontSize: fontSize - 1, color: textColor.withOpacity(0.8)),
+                style: TextStyle(fontSize: fontSize - 1, color: textColor.withValues(alpha: 0.8)),
               ),
             )
           else
