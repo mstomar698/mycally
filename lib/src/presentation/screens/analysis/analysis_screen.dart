@@ -360,7 +360,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: fontSize - 1,
-              color: textColor.withOpacity(0.7),
+              color: textColor.withValues(alpha: 0.7),
             ),
           ),
         ),

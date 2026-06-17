@@ -38,7 +38,7 @@ class _EditVendorScreenState extends State<EditVendorScreen> {
 
   Future<void> _loadVendorIfEditing() async {
     final id = ModalRoute.of(context)?.settings.arguments;
-    print('Editing vendor ID: $id');
+    debugPrint('Editing vendor ID: $id');
     if (id is int) {
       final vendor = await isar.vendors.get(id);
       if (vendor != null) {
@@ -306,7 +306,7 @@ class _EditVendorScreenState extends State<EditVendorScreen> {
                 tr('no_additional_info'),
                 style: TextStyle(
                   fontSize: fontSize - 2,
-                  color: textColor.withOpacity(0.6),
+                  color: textColor.withValues(alpha: 0.6),
                 ),
               )
             else
@@ -354,7 +354,7 @@ class _EditVendorScreenState extends State<EditVendorScreen> {
         currentIndex: _currentIndex,
         backgroundColor: backgroundColor,
         selectedItemColor: Colors.deepPurple,
-        unselectedItemColor: textColor.withOpacity(0.6),
+        unselectedItemColor: textColor.withValues(alpha: 0.6),
         onTap: _onTabTapped,
         items: [
           BottomNavigationBarItem(

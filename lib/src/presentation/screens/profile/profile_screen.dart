@@ -126,7 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     tr('no_user_found'),
                     style: TextStyle(
                       fontSize: fontSize,
-                      color: textColor.withOpacity(0.6),
+                      color: textColor.withValues(alpha: 0.6),
                     ),
                   ),
                 );
@@ -170,7 +170,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         '#${user.id}',
                         style: TextStyle(
                           fontSize: fontSize - 2,
-                          color: textColor.withOpacity(0.7),
+                          color: textColor.withValues(alpha: 0.7),
                         ),
                       ),
                       const SizedBox(height: 40),
@@ -276,7 +276,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           currentIndex: _currentIndex,
           backgroundColor: backgroundColor,
           selectedItemColor: Colors.deepPurple,
-          unselectedItemColor: textColor.withOpacity(0.6),
+          unselectedItemColor: textColor.withValues(alpha: 0.6),
           onTap: _onTabTapped,
           items: [
             BottomNavigationBarItem(
@@ -313,7 +313,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               '$label:',
               style: TextStyle(
                 fontSize: fontSize,
-                color: textColor.withOpacity(0.8),
+                color: textColor.withValues(alpha: 0.8),
                 fontWeight: FontWeight.w600,
               ),
             ),

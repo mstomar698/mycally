@@ -196,7 +196,7 @@ class _VendorsScreenState extends State<VendorsScreen> {
                           vendor.mobileNumber,
                           style: TextStyle(
                               fontSize: fontSize - 2,
-                              color: textColor.withOpacity(0.7)),
+                              color: textColor.withValues(alpha: 0.7)),
                         ),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -225,7 +225,7 @@ class _VendorsScreenState extends State<VendorsScreen> {
         currentIndex: _currentIndex,
         backgroundColor: backgroundColor,
         selectedItemColor: Colors.deepPurple,
-        unselectedItemColor: textColor.withOpacity(0.6),
+        unselectedItemColor: textColor.withValues(alpha: 0.6),
         onTap: _onTabTapped,
         items: [
           BottomNavigationBarItem(

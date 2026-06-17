@@ -115,7 +115,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                     rangeLabel,
                     style: TextStyle(
                       fontSize: fontSize - 1,
-                      color: textColor.withOpacity(0.8),
+                      color: textColor.withValues(alpha: 0.8),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -200,7 +200,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
           children: [
             Text(
               label,
-              style: TextStyle(fontSize: fontSize - 3, color: textColor.withOpacity(0.7)),
+              style: TextStyle(fontSize: fontSize - 3, color: textColor.withValues(alpha: 0.7)),
             ),
             const SizedBox(height: 6),
             Text(
@@ -225,7 +225,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
           padding: const EdgeInsets.all(20),
           child: Text(
             tr('no_expenses_for_analysis'),
-            style: TextStyle(fontSize: fontSize - 1, color: textColor.withOpacity(0.7)),
+            style: TextStyle(fontSize: fontSize - 1, color: textColor.withValues(alpha: 0.7)),
           ),
         ),
       );
@@ -266,7 +266,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
           padding: const EdgeInsets.all(20),
           child: Text(
             tr('no_expenses_for_analysis'),
-            style: TextStyle(fontSize: fontSize - 1, color: textColor.withOpacity(0.7)),
+            style: TextStyle(fontSize: fontSize - 1, color: textColor.withValues(alpha: 0.7)),
           ),
         ),
       );
