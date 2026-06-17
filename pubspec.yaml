@@ -17,7 +17,7 @@ dependencies:
   easy_localization: ^3.0.7
   shared_preferences: ^2.3.5
   url_launcher: ^6.3.1
-  package_info_plus: ^4.0.1
+  package_info_plus: ^8.3.0
   isar: ^3.1.0  
   isar_flutter_libs:
     git: 
