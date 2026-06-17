@@ -84,5 +84,15 @@
   "add_receipt_photo": "Add Receipt Photo",
   "photo_attached": "Photo attached",
   "expenses_for_selected_day": "Expenses for selected day",
-  "no_expenses_for_day": "No expenses recorded for this day"
+  "no_expenses_for_day": "No expenses recorded for this day",
+  "category_breakdown": "Category Breakdown",
+  "daily_spend": "Daily Spend",
+  "month_over_month": "Month over Month",
+  "no_expenses_for_analysis": "No expenses recorded for this period",
+  "date_range": "Date Range",
+  "category_summary": "Category Summary",
+  "largest_expenses": "Largest Expenses",
+  "total_spent": "Total Spent",
+  "daily_average": "Daily Average",
+  "transactions": "Transactions"
 }
