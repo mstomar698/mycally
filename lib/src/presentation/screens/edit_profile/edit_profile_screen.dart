@@ -107,7 +107,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       });
     }
 
-    final allVendors = await isar.vendors.where().findAll();
+    final allVendors = await isar.vendors.where().anyId().findAll();
     setState(() {
       _allVendors = allVendors;
     });

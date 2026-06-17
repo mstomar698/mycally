@@ -77,5 +77,14 @@
   "hide_vendor": "विक्रेता छुपाएँ",
   "vendor_details": "विक्रेता विवरण",
   "close_calendar": "कैलेंडर बंद करें",
-  "view_analysis": "विश्लेषण देखें"
+  "view_analysis": "विश्लेषण देखें",
+  "add_expense": "खर्च जोड़ें",
+  "amount": "राशि",
+  "category": "श्रेणी",
+  "uncategorized": "बिना श्रेणी",
+  "note": "नोट",
+  "add_receipt_photo": "रसीद फोटो जोड़ें",
+  "photo_attached": "फोटो जुड़ गई है",
+  "expenses_for_selected_day": "चयनित दिन के खर्च",
+  "no_expenses_for_day": "इस दिन के लिए कोई खर्च दर्ज नहीं है"
 }

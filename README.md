@@ -8,14 +8,13 @@ MyCally is a **local-first personal-finance diary** for Flutter: log day-wise
 purchases on a calendar and review where your money goes, all offline and on your
 device. No accounts, no cloud, no ads. Bilingual (English / हिन्दी).
 
-> **🚧 Early development.** The app shell, calendar, settings, theme/language
-> preferences, and local (Isar) storage are in place, but the core
-> expense-recording flow and the analysis/report charts are still being built.
-> See the roadmap below.
+> **🚧 Early development.** Core expense capture and calendar wiring are in place;
+> analysis/report charts are still being built. See the roadmap below.
 
 ## Features
 
-- 📅 Calendar-based daily expense diary
+- 📅 Calendar-based daily expense diary with real persisted entries
+- ➕ Add expenses (amount, category/payee, note, optional receipt photo)
 - 🌐 Localized UI — English & Hindi (`easy_localization`)
 - 🎨 Light/dark themes and adjustable font size, persisted across launches
 - 💾 Local-first storage with [Isar](https://isar.dev) — works fully offline
@@ -36,9 +35,17 @@ dart run build_runner build --delete-conflicting-outputs   # generate Isar code
 flutter run
 ```
 
+## Test locally
+
+```bash
+flutter analyze
+flutter test test/src/app/main_test.dart test/src/data/repositories/expense_repository_test.dart
+flutter test integration_test   # requires Android emulator/device
+```
+
 ## Roadmap
 
-1. **Core diary** — expense model + capture flow; wire the calendar to real data.
+1. ~~**Core diary**~~ — expense model + capture flow; calendar wired to real data.
 2. **Insights** — analysis & report charts from recorded expenses.
 3. **Daily utility** — categories, recurring entries, budgets and reminders.
 4. **Data portability** — CSV/PDF export, encrypted backup & restore.
@@ -47,8 +54,8 @@ A detailed development brief lives in [`docs/OSS_PLAN.md`](docs/OSS_PLAN.md).
 
 ## Contributing
 
-Issues and pull requests are welcome. This is an early-stage project — the
-roadmap above is the best place to start.
+Issues and pull requests are welcome. Please read [`CONTRIBUTING.md`](CONTRIBUTING.md)
+before opening a pull request.
 
 ## License
 

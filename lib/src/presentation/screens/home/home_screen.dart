@@ -1,7 +1,13 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:isar/isar.dart';
+import 'package:mycally/src/data/models/expense.dart';
 import 'package:mycally/src/data/models/user.dart';
+import 'package:mycally/src/data/models/vendor.dart';
+import 'package:mycally/src/data/repositories/expense_repository.dart';
 import 'package:mycally/src/data/services/database.dart';
 import 'package:mycally/src/presentation/screens/analysis/analysis_screen.dart';
 import 'package:mycally/src/presentation/screens/profile/profile_screen.dart';
@@ -9,8 +15,8 @@ import 'package:mycally/src/presentation/screens/reports/reports_screen.dart';
 import 'package:mycally/src/presentation/screens/settings/settings_screen.dart';
 import 'package:mycally/src/presentation/widgets/pull_to_refresh_wrapper.dart';
 import 'package:mycally/src/state/providers/settings_provider.dart';
+import 'package:mycally/src/utils/validators.dart';
 import 'package:provider/provider.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,12 +27,18 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final ExpenseRepository _expenseRepository = ExpenseRepository();
+  final ImagePicker _imagePicker = ImagePicker();
+
   int _currentIndex = 0;
   bool _showCalendar = false;
   DateTime _selectedDate = DateTime.now();
   CalendarFormat _calendarFormat = CalendarFormat.month;
   Future<User?>? _userFuture;
-  final String _totalExpance = '₹2,450';
+  List<Expense> _selectedDayExpenses = <Expense>[];
+  double _monthTotal = 0;
+  Set<DateTime> _daysWithExpenses = <DateTime>{};
+  Map<int, Vendor> _vendorsById = <int, Vendor>{};
 
   @override
   void initState() {
@@ -63,18 +75,25 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _refresh() async {
-    setState(() {
-      _selectedDate = DateTime.now();
-      _loadUser();
-    });
-    await _userFuture;
+    _selectedDate = DateTime.now();
+    _loadUser();
+    await Future.wait([
+      _userFuture ?? Future<void>.value(),
+      _loadExpenseState(),
+    ]);
+    if (mounted) {
+      setState(() {});
+    }
   }
 
-  void _handleDateSelected(DateTime newDate) {
+  Future<void> _handleDateSelected(DateTime newDate) async {
     setState(() {
       _selectedDate = newDate;
     });
-    debugPrint('Selected Date: $_selectedDate');
+    await _loadDayExpenses();
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void _handleShowCalendarChanged(bool show) {
@@ -96,6 +115,181 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadExpenseState();
+  }
+
+  Future<void> _loadExpenseState() async {
+    await Future.wait([_loadVendors(), _loadMonthTotalAndMarkers(), _loadDayExpenses()]);
+  }
+
+  Future<void> _loadVendors() async {
+    final vendors = await isar.vendors.where().anyId().findAll();
+    _vendorsById = <int, Vendor>{for (final vendor in vendors) vendor.id: vendor};
+  }
+
+  Future<void> _loadMonthTotalAndMarkers() async {
+    final monthTotal =
+        await _expenseRepository.totalForMonth(_selectedDate.year, _selectedDate.month);
+    final days = await _expenseRepository.daysWithExpensesInMonth(
+      _selectedDate.year,
+      _selectedDate.month,
+    );
+    _monthTotal = monthTotal;
+    _daysWithExpenses = days;
+  }
+
+  Future<void> _loadDayExpenses() async {
+    _selectedDayExpenses = await _expenseRepository.getByDay(_selectedDate);
+  }
+
+  Future<void> _showAddExpenseSheet() async {
+    final amountController = TextEditingController();
+    final noteController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    int? selectedVendorId;
+    String? receiptImagePath;
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 16,
+                right: 16,
+                top: 16,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+              ),
+              child: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      tr('add_expense'),
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: amountController,
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      decoration: InputDecoration(
+                        labelText: tr('amount'),
+                        border: const OutlineInputBorder(),
+                      ),
+                      validator: Validators.validateAmount,
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<int?>(
+                      value: selectedVendorId,
+                      decoration: InputDecoration(
+                        labelText: tr('category'),
+                        border: const OutlineInputBorder(),
+                      ),
+                      items: [
+                        DropdownMenuItem<int?>(
+                          value: null,
+                          child: Text(tr('uncategorized')),
+                        ),
+                        ..._vendorsById.values.map(
+                          (v) => DropdownMenuItem<int?>(
+                            value: v.id,
+                            child: Text(v.name),
+                          ),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        setModalState(() {
+                          selectedVendorId = value;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: noteController,
+                      decoration: InputDecoration(
+                        labelText: tr('note'),
+                        border: const OutlineInputBorder(),
+                      ),
+                      maxLines: 2,
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () async {
+                              final file = await _imagePicker.pickImage(
+                                source: ImageSource.gallery,
+                              );
+                              if (file != null) {
+                                setModalState(() {
+                                  receiptImagePath = file.path;
+                                });
+                              }
+                            },
+                            icon: const Icon(Icons.photo_library_outlined),
+                            label: Text(tr('add_receipt_photo')),
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (receiptImagePath != null) ...[
+                      const SizedBox(height: 8),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          tr('photo_attached'),
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton(
+                        onPressed: () async {
+                          if (!(formKey.currentState?.validate() ?? false)) {
+                            return;
+                          }
+                          await _expenseRepository.create(
+                            amount: double.parse(amountController.text.trim()),
+                            date: _selectedDate,
+                            vendorId: selectedVendorId,
+                            note: noteController.text.trim().isEmpty
+                                ? null
+                                : noteController.text.trim(),
+                            receiptImagePath: receiptImagePath,
+                          );
+                          if (!mounted) {
+                            return;
+                          }
+                          Navigator.of(context).pop();
+                          await _loadExpenseState();
+                          if (!mounted) {
+                            return;
+                          }
+                          setState(() {});
+                        },
+                        child: Text(tr('save')),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     final settingsProvider = Provider.of<SettingsProvider>(context);
     final backgroundColor = settingsProvider.themeMode == ThemeMode.dark
@@ -105,7 +299,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ? Colors.white
         : Colors.deepPurple;
     final fontSize = settingsProvider.fontSize;
-    print('Current Index $_currentIndex');
+    final monthTotalLabel = NumberFormat.currency(
+      locale: context.locale.toLanguageTag(),
+      symbol: '₹',
+      decimalDigits: 2,
+    ).format(_monthTotal);
     return PullToRefreshWrapper(
       onRefresh: _refresh,
       child: Scaffold(
@@ -176,12 +374,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     user: user,
                     selectedDate: _selectedDate,
                     showCalendar: _showCalendar,
-                    totalExpance: _totalExpance,
+                    monthTotalLabel: monthTotalLabel,
                     calendarFormat: _calendarFormat,
+                    selectedDayExpenses: _selectedDayExpenses,
+                    daysWithExpenses: _daysWithExpenses,
+                    vendorsById: _vendorsById,
                     onDateSelected: _handleDateSelected,
                     onFormatChangedTrigger: _handleFormatChanged,
                     onShowCalendarChanged: _handleShowCalendarChanged,
                     handleNavigateToAnalysis: _handleNavigateToAnalysis,
+                    onAddExpense: _showAddExpenseSheet,
                   ),
                   const AnalysisScreen(),
                   const ReportsScreen(),
@@ -228,18 +430,22 @@ class _HomeScreenState extends State<HomeScreen> {
 class HomePageContent extends StatelessWidget {
   final User user;
   final bool showCalendar;
-  final String totalExpance;
+  final String monthTotalLabel;
   final DateTime selectedDate;
   final CalendarFormat _calendarFormat;
-  final Function(DateTime) onDateSelected;
-  final Function(bool) onShowCalendarChanged;
-  final Function(CalendarFormat) onFormatChangedTrigger;
-  final Function() handleNavigateToAnalysis;
+  final Future<void> Function(DateTime) onDateSelected;
+  final ValueChanged<bool> onShowCalendarChanged;
+  final ValueChanged<CalendarFormat> onFormatChangedTrigger;
+  final VoidCallback handleNavigateToAnalysis;
+  final VoidCallback onAddExpense;
+  final List<Expense> selectedDayExpenses;
+  final Set<DateTime> daysWithExpenses;
+  final Map<int, Vendor> vendorsById;
 
   const HomePageContent({
     super.key,
     required this.user,
-    required this.totalExpance,
+    required this.monthTotalLabel,
     required this.selectedDate,
     required this.showCalendar,
     required this.onDateSelected,
@@ -247,6 +453,10 @@ class HomePageContent extends StatelessWidget {
     required this.onFormatChangedTrigger,
     required CalendarFormat calendarFormat,
     required this.handleNavigateToAnalysis,
+    required this.onAddExpense,
+    required this.selectedDayExpenses,
+    required this.daysWithExpenses,
+    required this.vendorsById,
   }) : _calendarFormat = calendarFormat;
 
   Widget _buildMonthYearSelector(BuildContext context, DateTime selectedDate) {
@@ -300,8 +510,19 @@ class HomePageContent extends StatelessWidget {
           onFormatChanged: (format) {
             onFormatChangedTrigger(format);
           },
-          onDaySelected: (selectedDay, focusedDay) {
-            onDateSelected(selectedDay);
+          selectedDayPredicate: (day) => isSameDay(day, selectedDate),
+          eventLoader: (day) {
+            final key = DateTime(day.year, day.month, day.day);
+            return daysWithExpenses.contains(key) ? <String>['expense'] : <String>[];
+          },
+          calendarStyle: CalendarStyle(
+            markerDecoration: BoxDecoration(
+              color: Colors.deepPurple.withOpacity(0.8),
+              shape: BoxShape.circle,
+            ),
+          ),
+          onDaySelected: (selectedDay, focusedDay) async {
+            await onDateSelected(selectedDay);
             onShowCalendarChanged(false);
           },
         ),
@@ -383,8 +604,8 @@ class HomePageContent extends StatelessWidget {
             currentDate.year == selectedDate.year;
 
         return GestureDetector(
-          onTap: () {
-            onDateSelected(currentDate);
+          onTap: () async {
+            await onDateSelected(currentDate);
           },
           child: _buildDateCard(context, '${currentDate.day}', isSelected),
         );
@@ -417,128 +638,11 @@ class HomePageContent extends StatelessWidget {
     );
   }
 
-  Widget _buildVendorDetailsModal(
-    BuildContext context, {
-    required String vendorName,
-    required String vendorType,
-    required String amountDelivered,
-    required double fontSize,
-  }) {
-    return AlertDialog(
-      content: Container(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              vendorName,
-              style: TextStyle(
-                fontSize: fontSize,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text('Type: $vendorType'),
-            const SizedBox(height: 8),
-            Text('Amount Delivered: $amountDelivered'),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildVendorCard(BuildContext context, String vendorName,
-      String vendorType, String amountDelivered) {
-    final settingsProvider = Provider.of<SettingsProvider>(context);
-    final fontSize = settingsProvider.fontSize;
-    final textColor = settingsProvider.themeMode == ThemeMode.dark
-        ? Colors.white
-        : Colors.deepPurple;
-
-    return InkWell(
-      onTap: () {
-        showDialog(
-          context: context,
-          builder: (context) => _buildVendorDetailsModal(
-            context,
-            vendorName: vendorName,
-            vendorType: vendorType,
-            amountDelivered: amountDelivered,
-            fontSize: fontSize,
-          ),
-        );
-      },
-      child: Card(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '$vendorName ($vendorType)',
-                    style: TextStyle(
-                      fontSize: fontSize,
-                      fontWeight: FontWeight.bold,
-                      color: textColor,
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        child: Switch(
-                          value: true,
-                          onChanged: (bool value) {
-                            debugPrint(
-                                'Toggle for $vendorName changed to $value');
-                          },
-                          activeColor: Colors.deepPurple,
-                        ),
-                      ),
-                      GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        child: PopupMenuButton<String>(
-                          icon: Icon(Icons.more_vert, color: textColor),
-                          onSelected: (value) {
-                            if (value == 'hide') {
-                              debugPrint('Hide vendor $vendorName');
-                            } else if (value == 'details') {
-                              debugPrint('Show details for vendor $vendorName');
-                            }
-                          },
-                          itemBuilder: (context) => [
-                            PopupMenuItem(
-                              value: 'hide',
-                              child: Text(tr('hide_vendor')),
-                            ),
-                            PopupMenuItem(
-                              value: 'details',
-                              child: Text(tr('vendor_details')),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '${tr('amount_delivered')}: $amountDelivered',
-                style: TextStyle(
-                  fontSize: fontSize - 2,
-                  color: textColor.withOpacity(0.8),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+  String _vendorNameFor(Expense expense) {
+    if (expense.vendorId == null) {
+      return tr('uncategorized');
+    }
+    return vendorsById[expense.vendorId]?.name ?? tr('uncategorized');
   }
 
   @override
@@ -560,7 +664,7 @@ class HomePageContent extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
-              tr('vendor_list'),
+              tr('expenses_for_selected_day'),
               style: TextStyle(
                 fontSize: fontSize + 2,
                 fontWeight: FontWeight.bold,
@@ -569,8 +673,56 @@ class HomePageContent extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          _buildVendorCard(context, 'Ram', 'milk', '2 litres'),
-          _buildVendorCard(context, 'Shyam', 'grocery', '3 units'),
+          if (selectedDayExpenses.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              child: Text(
+                tr('no_expenses_for_day'),
+                style: TextStyle(fontSize: fontSize - 1, color: textColor.withOpacity(0.8)),
+              ),
+            )
+          else
+            ...selectedDayExpenses.map(
+              (expense) => Card(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                child: ListTile(
+                  leading: const Icon(Icons.payments_outlined),
+                  title: Text(
+                    _vendorNameFor(expense),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: fontSize - 1,
+                    ),
+                  ),
+                  subtitle: expense.note == null || expense.note!.trim().isEmpty
+                      ? null
+                      : Text(expense.note!),
+                  trailing: Text(
+                    NumberFormat.currency(
+                      locale: context.locale.toLanguageTag(),
+                      symbol: '₹',
+                      decimalDigits: 2,
+                    ).format(expense.amount),
+                    style: TextStyle(
+                      color: textColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: fontSize - 1,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: onAddExpense,
+                icon: const Icon(Icons.add),
+                label: Text(tr('add_expense')),
+              ),
+            ),
+          ),
           const SizedBox(height: 16),
         ],
       ),
@@ -678,7 +830,7 @@ class HomePageContent extends StatelessWidget {
                     ]),
                     const SizedBox(height: 8),
                     Text(
-                      totalExpance,
+                      monthTotalLabel,
                       style: TextStyle(
                         fontSize: fontSize + 1,
                         fontWeight: FontWeight.bold,
