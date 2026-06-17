@@ -44,3 +44,8 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 .qodo
+
+# Built release binaries — ship as GitHub Release assets, not in-tree
+releases/
+*.apk
+*.aab
