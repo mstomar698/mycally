@@ -18,16 +18,16 @@
 
 ## 2. E2E integration tests — Android emulator required
 
-**Status:** Fixed signing + compileSdk for CI (PR pending). Workflow: `.github/workflows/e2e-android.yml`.
+**Status:** Green on GitHub Actions (PRs #6–#9, 2026-06-17). Workflow: `.github/workflows/e2e-android.yml`.
 
-**Previous failure (2026-06-17):** `assembleDebug` failed on CI with:
-- `SigningConfig "debug" is missing required property "storeFile"` — custom debug signing in
-  `android/app/build.gradle` required local `key.properties` not present on GitHub Actions.
+**Previous failures (2026-06-17):**
+- `SigningConfig "debug" is missing required property "storeFile"` — custom debug signing required local `key.properties` not present on CI.
 - `integration_test` plugin requires `compileSdk 36`; project was on 34.
-- `package_info_plus` 4.x fails Kotlin compile against SDK 36 — upgrade to ^8.3.
-- Android emulator may fail to decode `mycally_logo.png` — `MycallyLogo` widget uses `errorBuilder` fallback icon.
+- `package_info_plus` 4.x fails Kotlin compile against SDK 36 — upgraded to ^8.3.
+- Android emulator failed to decode `mycally_logo.png` — `MycallyLogo` widget uses `errorBuilder` fallback icon.
+- Integration test used a fixed 3s wait; slow CI emulators need polling (up to 45s) for splash/login content.
 
-**Fix:** Only apply custom `signingConfigs` when `key.properties` exists; bump `compileSdk` to 36; upgrade `package_info_plus` to ^8.3 for Kotlin/SDK 36 compatibility.
+**Fixes:** Conditional signing when `key.properties` exists; `compileSdk` 36; `package_info_plus` ^8.3; `MycallyLogo` fallback; poll-based integration test assertions.
 
 **To run locally:**
 1. Install Android SDK + emulator (Android Studio).
@@ -103,7 +103,7 @@ flutter test test/src/app/main_test.dart test/src/data/repositories/expense_repo
 
 Per `docs/OSS_PLAN.md`:
 - Analysis + Reports are implemented (`fl_chart`, aggregates).
-- Repo can move toward public flip after: CI green, e2e green, APK history purge, screenshots in README.
+- Repo can move toward public flip after: CI green, e2e green ✓, APK history purge, screenshots in README.
 
 **Not blockers but next:** Phase 3 polish (category UX rename, budgets, recurring), Phase 4 export/backup.
 
